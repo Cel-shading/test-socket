@@ -19,8 +19,6 @@ services:
     build:
       context: .
       dockerfile: ./relay.dockerfile
-    ports:
-      - "8082:8082"
     depends_on:
       - socket-pulser
 
@@ -30,8 +28,6 @@ services:
     build:
       context: .
       dockerfile: ./socket-pulser.dockerfile
-    ports:
-      - "8081:8081"
 
 networks:
   default:

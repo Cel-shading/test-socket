@@ -1,43 +1,38 @@
-const http = require('http');
 const net = require('net');
 const WebSocket = require('ws');
+const fs = require('fs'); // Ajout du module fs
 
-// Create an HTTP server for port 4146
-const server1 = http.createServer();
-const wss1 = new WebSocket.Server({ server: server1 });
+const wss1 = new WebSocket.Server({ port: 4146 });
 
 wss1.on('connection', (ws) => {
   const socket = net.connect(4146, 'socket-pulser');
 
+  socket.on('connect', () => {
+    console.log('Connected to 4146');
+  });
+
   socket.on('data', (data) => {
     ws.send(data);
+    fs.appendFileSync('request-response.log', `Request: ${data}\n`); // Enregistrement de la requête
   });
 
   socket.on('error', (err) => {
     ws.send(`Error: ${err.message}`);
+    fs.appendFileSync('request-response.log', `Error: ${err.message}\n`); // Enregistrement de l'erreur
   });
 });
 
-server1.listen(4146, '0.0.0.0', () => {
-  console.log(`WebSocket server running at ws://0.0.0.0:4146/`);
-});
-
-// Create an HTTP server for port 4147
-const server2 = http.createServer();
-const wss2 = new WebSocket.Server({ server: server2 });
+const wss2 = new WebSocket.Server({ port: 4147 });
 
 wss2.on('connection', (ws) => {
   const socket = net.connect(4147, 'socket-pulser');
 
+  socket.on('connect', () => {
+    console.log('Connected to 4147');
+  });
+
   socket.on('data', (data) => {
     ws.send(data);
+    fs.appendFileSync('request-response.log', `Response: ${data}\n`); // Enregistrement de la réponse
   });
-
-  socket.on('error', (err) => {
-    ws.send(`Error: ${err.message}`);
-  });
-});
-
-server2.listen(4147, '0.0.0.0', () => {
-  console.log(`WebSocket server running at ws://0.0.0.0:4147/`);
 });
